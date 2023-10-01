@@ -1,14 +1,39 @@
-var c1=document.querySelector(".color1");
-var c2=document.querySelector(".color2");
-var b=document.querySelector("body");
-var h3=document.querySelector("h3");
+const gradientBox = document.querySelector(".gradient-box");
+const selectMenu = document.querySelector(".select-box select");
+const colorInputs = document.querySelectorAll(".colors input");
+const textarea = document.querySelector("textarea");
+const refreshBtn = document.querySelector(".refresh");
+const copyBtn = document.querySelector(".copy");
 
-
-function bckgnd(){
-
-	b.style.background=	"linear-gradient(to right,"+c1.value+","+c2.value+")";
-	h3.textContent= b.style.background+";";
+const getRandomColor = () => {
+    // Generating a random color in hexadecimal format. Example: #5665E9
+    const randomHex = Math.floor(Math.random() * 0xffffff).toString(16);
+    return `#${randomHex}`;
 }
 
-c1.addEventListener("input",bckgnd);
-c2.addEventListener("input",bckgnd);
+const generateGradient = (isRandom) => {
+    if(isRandom) { // If isRandom is true, update the colors inputs value with random color
+        colorInputs[0].value = getRandomColor();
+        colorInputs[1].value = getRandomColor();
+    }
+    // Creating a gradient string using the select menu value with color input values
+    const gradient = `linear-gradient(${selectMenu.value}, ${colorInputs[0].value}, ${colorInputs[1].value})`;
+    gradientBox.style.background = gradient;
+    textarea.value = `background: ${gradient};`;
+}
+
+const copyCode = () => {
+    // Copying textarea value and updating the copy button text
+    navigator.clipboard.writeText(textarea.value);
+    copyBtn.innerText = "Code Copied";
+    setTimeout(() => copyBtn.innerText = "Copy Code", 1600);
+}
+
+colorInputs.forEach(input => {
+    // Calling generateGradient function on each color input clicks
+    input.addEventListener("input", () => generateGradient(false));
+});
+
+selectMenu.addEventListener("change", () => generateGradient(false));
+refreshBtn.addEventListener("click", () => generateGradient(true));
+copyBtn.addEventListener("click", copyCode);
